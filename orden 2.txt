@@ -1,0 +1,43 @@
+int i=0,j=0;
+int f[3][4]={{1,1,1,1},{0,1,1,0},{1,1,1,1}}; 
+
+
+void setup()
+{
+  pinMode(8, OUTPUT);
+  pinMode(2, OUTPUT);
+  
+}
+
+
+void loop()
+{
+  if(f[i][j]==1){
+ digitalWrite(2, HIGH);
+ digitalWrite(8, 0);
+ digitalWrite(8, 1);
+ digitalWrite(8, 0);
+ delay(500);
+ }
+  
+  else{
+ digitalWrite(2, LOW);
+ digitalWrite(8, 0);
+ digitalWrite(8, 1);
+ digitalWrite(8, 0);
+ delay(500);
+  }
+	
+ if(j==4){
+  j=0;
+  i++;
+ }
+ j++;
+ 
+  if(i==3){
+  delay(10000);
+  j=0;
+  i=0;
+ } 
+  
+}
