@@ -1,9 +1,11 @@
+
 int i=0,j=0;
-int f[3][4]={{1,1,1,1},{0,1,1,0},{1,1,1,1}}; 
+bool arreglo[][8]={{0}},sino=1; 
 
 
 void setup()
 {
+  Serial.begin(9600);
   pinMode(8, OUTPUT);
   pinMode(2, OUTPUT);
   
@@ -12,32 +14,45 @@ void setup()
 
 void loop()
 {
-  if(f[i][j]==1){
- digitalWrite(2, HIGH);
- digitalWrite(8, 0);
- digitalWrite(8, 1);
- digitalWrite(8, 0);
- delay(500);
- }
-  
-  else{
- digitalWrite(2, LOW);
- digitalWrite(8, 0);
- digitalWrite(8, 1);
- digitalWrite(8, 0);
- delay(500);
+    // send data only when you receive data:
+  for(int i=0;i<=7;i++)
+  {
+    for(int j=0;j<=7;i++)
+    {
+      if (Serial.available() > 0) 
+      {
+    // read the incoming byte:
+    	arreglo[i][j] = Serial.read();
+        if(arreglo[i][j]==1)
+        {
+          sino=1;
+        }
+        else
+        {
+          sino=0;
+        }
+
+    // say what you got:
+    	Serial.print("I received: ");
+    	Serial.print(sino);
+  	  }
+    }
   }
-	
- if(j==4){
-  j=0;
-  i++;
- }
- j++;
- 
-  if(i==3){
+  imprimir(arreglo);
   delay(10000);
-  j=0;
-  i=0;
- } 
   
+}
+
+void imprimir(bool leds[][8])
+{
+  for(int fila=0;fila<=7;fila++){
+    for(int columna=0;columna<=7;columna++)
+    {
+      digitalWrite(2, leds[fila][columna]);
+      digitalWrite(8, 0);
+      digitalWrite(8, 1);
+      digitalWrite(8, 0);
+      delay(3000);
+    }
+  }
 }
