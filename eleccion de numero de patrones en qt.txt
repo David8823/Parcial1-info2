@@ -1,0 +1,41 @@
+#include <iostream>
+#include <stdlib.h>
+using namespace std;
+bool **arreglo1;
+int narreglos;
+void pedir_datos();
+void imprimir(bool **,int);
+int main()
+{
+    pedir_datos();
+    imprimir(arreglo1,narreglos);
+    for(int i=0;i<narreglos;i++){
+        delete[] arreglo1[i];
+    }
+    delete[] arreglo1;
+    return 0;
+}
+void pedir_datos(){
+    cout<<"ingrese el numero de arreglos"<<endl;
+    cin>>narreglos;
+    arreglo1= new bool*[narreglos];
+    for(int i=0;i<narreglos;i++){
+        arreglo1[i]=new bool[64];
+    }
+    cout<<"ingrese los elementos de la matriz"<<endl;
+    for(int f=0;f<narreglos;f++){
+        for(int c=0;c<64;c++){
+            cout<<"ingrese un 1 o un 0"<<endl;
+            cin>>*(*(arreglo1+f)+c);
+        }
+    }
+}
+void imprimir(bool **arreglo1,int filas){
+    cout<<"imprimiendo los patrones"<<endl;
+    for(int f=0;f<filas;f++){
+        for(int c=0;c<64;c++){
+            cout<<*(*(arreglo1+f)+c);
+        }
+        cout<<endl;
+    }
+}
