@@ -1,58 +1,187 @@
-
-int i=0,j=0;
-bool arreglo[][8]={{0}},sino=1; 
-
+#include <stdlib.h>
+using namespace std;
+bool **arreglo1,verifica[8][8],disponible=1;
+int narreglos,*delays;
+void revisar(bool [][8],bool);
+void imagen(int);
+void imprimir(bool **,int);
+void verificar();
+void publik();
+int accion;
+bool repetir=0;
 
 void setup()
 {
-  Serial.begin(9600);
-  pinMode(8, OUTPUT);
-  pinMode(2, OUTPUT);
+    pinMode(2, OUTPUT);
+  	pinMode(8, OUTPUT);
+    Serial.begin(9000);
+    Serial.println("menu:");
+    Serial.println("1. para probar el correcto funcionamiento de los LEDs");
+    Serial.println("2. para ingresar el numero de patrones, un patron y ");
+    Serial.println("mostrarlo en el arreglo de LEDs");
+    Serial.println("que quiere hacer?");
+    while(disponible){
+      if(Serial.available()>0){
+        accion=Serial.parseInt();  //entrada de datos
+        disponible=0;
+      }
+    }
+    if(accion==1 || accion==2){
+        repetir=1;
+    }
+}
+
   
+  void loop(){
+    while(repetir){
+        switch (accion){
+        case 1:
+            verificar();
+            break;
+        
+         case 2:
+            publik();
+            imagen(narreglos);
+            imprimir(arreglo1,narreglos);
+            for(int i=0;i<narreglos;i++){
+                delete[] arreglo1[i];
+            }
+            delete[] arreglo1;
+            break;
+        
+         
+         default :
+            Serial.println("ERROR: accion no valida");
+            Serial.println("ingrese una accion valida");
+            Serial.println("1. para probar el correcto funcionamiento de los LEDs");
+            Serial.println("2. para ingresar el numero de patrones, un patron y ");
+            Serial.println("mostrarlo en el arreglo de LEDs");
+            accion=Serial.parseInt();
+            break;
+        }
+        
+        
+        Serial.println("quiere volver a ejecutar el programa?");
+        Serial.println("ingrese 1 para si y 0 para no");
+        repetir=Serial.parseInt();
+        if(repetir==1){
+            Serial.println("1. para probar el correcto funcionamiento de los LEDs");
+            Serial.println("2. para ingresar el numero de patrones, un patron y ");
+            Serial.println("que quiere hacer?");
+            accion=Serial.parseInt();
+        
+        
+        	}
+    	}
+	}
+
+  
+void imagen(int arreglos){
+    int f2=0,c2=0;
+    bool borrar=0;
+    arreglo1= new bool*[arreglos];
+    for(int i=0;i<arreglos;i++){
+        arreglo1[i]=new bool[64];
+    }
+    Serial.println("ingrese los elementos de la matriz");
+    Serial.println("solo se recibiran 1 o 0 como elementos");
+    Serial.println("de la matriz, cualquier otra cosa generara un fallo");
+    Serial.println("en el programa");
+    Serial.println("ingrese el patron");
+    for(int f=0;f<narreglos;f++){
+        for(int c=0;c<64;c++){
+            *(*(arreglo1+f)+c)=Serial.parseInt();
+            if(c2<8){
+                verifica[f2][c2]=*(*(arreglo1+f)+c);
+                c2++;
+            }
+            if(c2==8){
+                revisar(verifica,borrar);
+                c2=0;
+                f2++;
+            }
+            if(c+1==64){
+                borrar=1;
+                revisar(verifica,borrar);
+                c2=0;
+                f2=0;
+                borrar=0;
+            }
+        }
+        Serial.println("");
+        c2=0;
+        f2=0;
+    }
 }
 
 
-void loop()
-{
-    // send data only when you receive data:
-  for(int i=0;i<=7;i++)
-  {
-    for(int j=0;j<=7;i++)
-    {
-      if (Serial.available() > 0) 
-      {
-    // read the incoming byte:
-    	arreglo[i][j] = Serial.read();
-        if(arreglo[i][j]==1)
-        {
-          sino=1;
+void imprimir(bool **arreglo1,int filas){
+    Serial.println("imprimiendo los patrones");
+    for(int f=0;f<filas;f++){
+        for(int c=0;c<64;c++){
+          Serial.println(*(*(arreglo1+f)+c));
+          digitalWrite(2,*(*(arreglo1+f)+c));
+          digitalWrite(8,0);
+          digitalWrite(8,1);
+          digitalWrite(8,0);
         }
-        else
-        {
-          sino=0;
-        }
-
-    // say what you got:
-    	Serial.print("I received: ");
-    	Serial.print(sino);
-  	  }
+      digitalWrite(2,0);
+      digitalWrite(8,0);
+      digitalWrite(8,1);
+      digitalWrite(8,0);
+      Serial.println("");
+      delay(*(delays+f));
     }
-  }
-  imprimir(arreglo);
-  delay(10000);
-  
 }
 
-void imprimir(bool leds[][8])
-{
-  for(int fila=0;fila<=7;fila++){
-    for(int columna=0;columna<=7;columna++)
-    {
-      digitalWrite(2, leds[fila][columna]);
-      digitalWrite(8, 0);
-      digitalWrite(8, 1);
-      digitalWrite(8, 0);
-      delay(3000);
+
+void revisar(bool matriz[][8],bool borrar){
+    if(borrar){
+        for(int f=0;f<8;f++){
+            for(int c=0;c<8;c++){
+                matriz[f][c]=0;
+            }
+        }
     }
+    else{
+        Serial.println("revisando el patron");
+        for(int f=0;f<8;f++){
+            for(int c=0;c<8;c++){
+                Serial.println(matriz[f][c]);
+            }
+            Serial.println("");
+        }
+    }
+}
+
+
+void verificar(){
+
+    for(int f=0;f<8;f++){
+        for(int c=0;c<8;c++){
+
+        	digitalWrite(2,HIGH);
+            digitalWrite(8,LOW);
+            digitalWrite(8,HIGH);
+            digitalWrite(8,LOW);
+        
+        }
+        Serial.println("");
+    }
+   digitalWrite(2,LOW);
+   digitalWrite(8,LOW);
+   digitalWrite(8,HIGH);
+   digitalWrite(8,LOW);
+}
+
+void publik(){
+
+  int i=0;
+  Serial.println("ingrese el numero de patrones");
+  narreglos=Serial.parseInt();
+  delays= new int[narreglos-1];
+  for(int i=0;i<narreglos-1;i++){
+    Serial.println("ingrese el numero de patrones");
+    *(delays+i)=Serial.parseInt();
   }
 }
